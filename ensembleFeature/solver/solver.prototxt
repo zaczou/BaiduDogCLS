@@ -1,0 +1,15 @@
+net: "model/model.prototxt"
+test_iter: 8 #3752/(batch=32)
+test_interval: 1000
+test_initialization: true
+display: 500
+base_lr: 1e-2
+lr_policy: "fixed"
+max_iter: 40000
+#momentum: 0.9
+#momentum2: 0.999
+weight_decay: 0.001
+snapshot: 2000
+snapshot_prefix: "snapshot/base/"
+solver_mode: GPU
+type: "AdaGrad"

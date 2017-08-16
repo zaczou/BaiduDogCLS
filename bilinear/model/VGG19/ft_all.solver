@@ -1,0 +1,15 @@
+test_iter: 469 #3752/(batch=4*2)
+test_interval: 500
+display: 50
+#CUB200 for batch size = 8, total images = 6000, 750 iters is one epoch, 27 epochs or so,20000 iters
+#DOG 	for batch size = 8, total images = 15000,1875 iters is one epoch, 21 epochs or so,40000 iters
+max_iter: 50000
+gamma: 0.1
+stepvalue: 40000
+lr_policy: "fixed"
+base_lr: 0.0001
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 1000
+snapshot_prefix: "snapshot/VGG19/ft_all"
+net: "model/VGG19/ft_all.prototxt"

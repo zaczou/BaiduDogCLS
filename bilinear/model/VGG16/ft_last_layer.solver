@@ -1,0 +1,16 @@
+test_iter: 234 #3752/(batch=8*2)
+test_interval: 500
+display: 50
+max_iter: 60000
+lr_policy: "multistep"
+base_lr: 1.0
+gamma: 0.25
+stepvalue: 20000
+stepvalue: 30000
+stepvalue: 40000
+stepvalue: 50000
+momentum: 0.9
+weight_decay: 0.000005
+snapshot: 10000
+snapshot_prefix: "snapshot/VGG16/ft_last_layer"
+net: "model/VGG16/ft_last_layer.prototxt"

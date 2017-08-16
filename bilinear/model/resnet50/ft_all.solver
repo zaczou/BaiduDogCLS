@@ -1,0 +1,16 @@
+test_iter: 938 #3752/(batch=4*2)
+test_interval: 1000
+display: 100
+#CUB200 for batch size = 8, total images = 6000, 750 iters is one epoch, 27 epochs or so,20000 iters
+#DOG 	for batch size = 8, total images = 15000,1875 iters is one epoch, 21 epochs or so,40000 iters
+stepvalue: 40000
+gamma: 0.1
+max_iter: 60000
+lr_policy: "multistep"
+base_lr: 0.001
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 1000
+snapshot_prefix: "snapshot/resnet50/ft_all"
+net: "model/resnet50/ft_all.prototxt"
+iter_size: 4

@@ -1,0 +1,18 @@
+net: "net.prototxt"
+test_iter: 100
+test_interval: 1000
+base_lr: 0.001
+momentum: 0.9
+weight_decay: 0.004
+stepsize: 10000
+gamma: 0.1
+lr_policy: "step"
+display: 100
+max_iter: 30000
+snapshot: 10000
+snapshot_format: HDF5
+snapshot_prefix: "model"
+solver_mode: GPU
+type: "Boost"
+
+output_boost_weight_file: ""
