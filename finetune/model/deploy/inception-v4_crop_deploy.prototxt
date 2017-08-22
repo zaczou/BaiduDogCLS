@@ -1,7 +1,7 @@
 layer {
-  name: "data"
+  name: "raw_data"
   type: "Input"
-  top: "data"
+  top: "raw_data"
   input_param {
     shape {
       dim: 1
@@ -9,6 +9,30 @@ layer {
       dim: 299
       dim: 299
     }
+  }
+}
+layer {
+  name: "crop_data"
+  type: "Input"
+  top: "crop_data"
+  input_param {
+    shape {
+      dim: 1
+      dim: 3
+      dim: 299
+      dim: 299
+    }
+  }
+}
+
+layer{
+  name: "data"
+  type: "Concat"
+  bottom: "raw_data"
+  bottom: "crop_data"
+  top: "data"
+  concat_param{
+    axis: 0
   }
 }
 layer {
@@ -6192,13 +6216,31 @@ layer {
     global_pooling: true
   }
 }
+layer{
+  name: "slice_feat"
+  type: "Slice"
+  bottom: "pool_8x8_s1"
+  top: "slice_feat_raw"
+  top: "slice_feat_crop"
+  slice_param{
+    axis: 0
+  }
+}
+layer{
+  name: "concat_feat"
+  type: "Concat"
+  top: "concat_feat"
+  bottom: "slice_feat_raw"
+  bottom: "slice_feat_crop"
+}
+
 layer {
   name: "pool_8x8_s1_drop"
   type: "Dropout"
-  bottom: "pool_8x8_s1"
+  bottom: "concat_feat"
   top: "pool_8x8_s1_drop"
   dropout_param {
-    dropout_ratio: 0.2
+    dropout_ratio: 0.5
   }
 }
 layer {

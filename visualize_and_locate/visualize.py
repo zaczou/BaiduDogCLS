@@ -18,29 +18,37 @@ def im2double(im):
 	return im2
 
 
-net_model = os.path.join(Project_dir,"finetune/model/deploy/resnet50_deploy.prototxt")
-net_weights=os.path.join(Project_dir,"finetune/model/finetune_models/cam_resnet50.caffemodel")
+#net_model = os.path.join(Project_dir,"finetune/model/deploy/resnet50_deploy.prototxt")
+#net_weights=os.path.join(Project_dir,"finetune/model/finetune_models/cam_resnet50.caffemodel")
+net_model = os.path.join(Project_dir,'finetune/model/deploy/inception-v4_deploy.prototxt')
+net_weights= os.path.join(Project_dir,'finetune/model/snapshot/inception-v4_centerloss/_iter_5200.caffemodel')
 
 out_layer = 'fc100'
-crop_size=224
-last_conv = 'res5c'
+crop_size=299
+resize_shape=320
+last_conv = 'inception_c3_concat'
 
 # load CAM model and extract features
 net = caffe.Net(net_model, net_weights, caffe.TEST)
 
-transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
+#transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
+#transformer.set_transpose('data', (2,0,1))
+#transformer.set_mean('data', np.load(caffe_root + '/python/caffe/imagenet/ilsvrc_2012_mean.npy').mean(1).mean(1))
+#transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
+#transformer.set_raw_scale('data',255)
+
+transformer = caffe.io.Transformer({'data': [1,3,299,299]})
 transformer.set_transpose('data', (2,0,1))
-transformer.set_mean('data', np.load(caffe_root + '/python/caffe/imagenet/ilsvrc_2012_mean.npy').mean(1).mean(1))
-transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
+transformer.set_mean('data', np.array([128,128,128]))
+transformer.set_channel_swap('data', (2,1,0))
 transformer.set_raw_scale('data',255)
+transformer.set_input_scale('data',1.0/128.0)
 
 weights_LR = net.params[out_layer][0].data # get the softmax layer of the network
 
-
-
 def show_CAM(image_path):
 	image = caffe.io.load_image(image_path)
-	image = resize(image, (256, 256))
+	image = resize(image, (resize_shape, resize_shape))
 
 	# Take center crop.
 	center = np.array(image.shape[:2]) / 2.0
@@ -76,8 +84,8 @@ def show_CAM(image_path):
 	for j in range(topNum):
 		# for one image
 		curCAMmap_crops = curCAMmapAll[:,:,j]
-		curCAMmapLarge_crops = resize(curCAMmap_crops, (256,256))
-		curHeatMap = resize(im2double(curCAMmapLarge_crops),(256,256)) # this line is not doing much
+		curCAMmapLarge_crops = resize(curCAMmap_crops, (resize_shape,resize_shape))
+		curHeatMap = resize(im2double(curCAMmapLarge_crops),(resize_shape,resize_shape)) # this line is not doing much
 		curHeatMap = im2double(curHeatMap)
 
 		curHeatMap = py_map2jpg(curHeatMap, None, 'jet')
@@ -91,7 +99,7 @@ def show_CAM(image_path):
 	plt.show(block=True)
 	plt.clf()
 
-test_dir=os.path.join(Project_dir,"dataset/test/image")
+test_dir=os.path.join(Project_dir,"dataset/test-01/image")
 imagelist = os.listdir(test_dir)
 imagelist.sort()
 for image in imagelist:

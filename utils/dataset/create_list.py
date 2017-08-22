@@ -31,6 +31,16 @@ def load_mapdict():
 	encode_dict_file.close() 
 	return encode_dict
 
+def upgrade_for_test2(raw_label):
+	if(raw_label=="46"):
+		label = "31"
+	elif(raw_label=="111"):
+		label = "87"
+	elif(raw_label=="74"):
+		label="72"
+	else:
+		label = raw_label
+	return label
 
 #load imagelist and move image to different dir/each dir for a single class
 def load_imagelist():
@@ -44,9 +54,9 @@ def load_imagelist():
 			line = line.strip()
 			cell = line.split(' ')
 			img_list.append(cell[0])
-			label_list.append(cell[1])
-			if(cell[1] not in raw_dict_list):
-				raw_dict_list.append(cell[1])
+			label_list.append(upgrade_for_test2(cell[1]))
+			if(upgrade_for_test2(cell[1]) not in raw_dict_list):
+				raw_dict_list.append(upgrade_for_test2(cell[1]))
 			line = train_f.readline()    
 		train_f.close() 
 
@@ -56,9 +66,9 @@ def load_imagelist():
 			line = line.strip()
 			cell = line.split(' ')
 			img_list.append(cell[0])
-			label_list.append(cell[1])
-			if(cell[1] not in raw_dict_list):
-				raw_dict_list.append(cell[1])
+			label_list.append(upgrade_for_test2(cell[1]))
+			if(upgrade_for_test2(cell[1]) not in raw_dict_list):
+				raw_dict_list.append(upgrade_for_test2(cell[1]))
 			line = val_f.readline()    
 		val_f.close() 
 	save_mapdict(dict(enumerate(raw_dict_list)))
@@ -70,7 +80,7 @@ def load_imagelist():
 #move data to different dir/each dir for a single class
 def movefile(img_list,label_list,map_dict):
 	src_dir = os.path.join(dataset_dir,"IMG")
-	if(not os.path.isdir(src_dir)):
+	if(not os.path.isdir(os.path.join(dataset_dir,"subclass"))):
 		os.mkdir(os.path.join(dataset_dir,"subclass"))
 	for index,image_file in enumerate(img_list):
 		dst_dir = os.path.join(dataset_dir,"subclass",encode(map_dict,label_list[index]))
@@ -88,7 +98,7 @@ img_list,label_list,map_dict = load_imagelist()
 np.random.seed(100)
 random_index = np.arange(len(img_list))
 np.random.shuffle(random_index)
-train_num=0.8*len(img_list)
+train_num=0.9*len(img_list)
 
 train_list_name = os.path.join(dataset_dir,"train_list.txt")
 val_list_name = os.path.join(dataset_dir,"val_list.txt")
@@ -98,6 +108,7 @@ val_list_file=open(val_list_name,"w")
 for i in range(len(img_list)):
 	if(i<train_num):
 		img_path = img_list[random_index[i]]+'.jpg'
+		raw_label = label_list[random_index[i]]
 		print >>train_list_file,"%s %s"%(img_path,encode(map_dict,label_list[random_index[i]]))
 	else:
 		img_path = img_list[random_index[i]]+'.jpg'
